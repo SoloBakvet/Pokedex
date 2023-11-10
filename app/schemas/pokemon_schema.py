@@ -9,7 +9,8 @@ class PokemonType(BaseModel):
         from_attributes = True
         
 class PokemonMove(BaseModel):
-    pass
+    move : str
+    #version_group_details: List[]
         
 class SimpleSprite(BaseModel):
     front_default : str

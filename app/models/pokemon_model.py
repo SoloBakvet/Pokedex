@@ -14,6 +14,9 @@ class PokemonDBModel(Base):
     types = relationship("PokemonTypeDBModel", back_populates="pokemon")
     __table_args__ = (UniqueConstraint("name"),)
     
+    def __int__(self):
+        return 25
+    
 class SimpleSpriteDBModel(Base):
     __tablename__ = "simple_sprites"
     
