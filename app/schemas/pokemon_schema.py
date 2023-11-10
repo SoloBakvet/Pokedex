@@ -1,16 +1,22 @@
-from pydantic import BaseModel, Field
 from typing import List, Optional
-
-class Type(BaseModel):
-    name : str
-
+from pydantic import BaseModel, Field
+     
 class PokemonType(BaseModel):
-    slot : int = Field(ge=0)
-    type : Type
-
+    slot : int = Field(ge=1)
+    type : str
+    
+    class Config:
+        from_attributes = True
+        
+class PokemonMove(BaseModel):
+    pass
+        
 class SimpleSprite(BaseModel):
     front_default : str
     
+    class Config:
+        from_attributes = True
+        
 class AdvancedSprite(BaseModel):
     front_default : str
     front_female : Optional[str] = None
@@ -20,26 +26,28 @@ class AdvancedSprite(BaseModel):
     back_female : Optional[str] = None
     back_shiny : str
     back_shiny_female : Optional[str] = None
-    
-# TODO: Implement
-class PokemonMove(BaseModel):
-    pass
-
+        
 class Pokemon(BaseModel):
-    id : int
+    id: int = Field(ge=1)
     name : str
     sprites : SimpleSprite
     types : List[PokemonType]
-    
-# TODO: Add missing fields
+
+    class Config:
+        from_attributes = True
+        
+# TODO: Implement extra fields
 class PokemonDetails(BaseModel):
     id : int
     name : str
     sprites : AdvancedSprite
     types : List[PokemonType]
-    #moves : List[PokemonMove]
     height : int
     weight : int
+    moves : List[PokemonMove]
     order : int
     #species : str
     #form : str
+        
+
+        

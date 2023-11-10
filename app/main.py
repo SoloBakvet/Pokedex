@@ -1,12 +1,9 @@
-
 from fastapi import FastAPI
-from .routers.v1 import v1_api
-from .db import manager
 
-# TODO: Remove once database system is implemented
-manager.init_db()
+from app.db import database
+from app.routers.v1 import v1_api
+
+database.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI()
 app.include_router(v1_api.router)
-
-

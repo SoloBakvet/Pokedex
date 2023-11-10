@@ -162,3 +162,4 @@ cython_debug/
 # Temporarily ignored
 pokemons.json
 pokemons.json:Zone.Identifier
+sql_app.db

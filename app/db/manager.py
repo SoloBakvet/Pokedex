@@ -1,6 +1,8 @@
 import json
 
-from app.models.pokemon import PokemonDetails, Pokemon
+from app.schemas.pokemon_schema import PokemonDetails, Pokemon
+
+
 
 # TODO: Implement proper database 
 
