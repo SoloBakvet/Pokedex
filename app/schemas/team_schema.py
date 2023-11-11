@@ -1,7 +1,7 @@
 from typing import List
 from pydantic import BaseModel
 
-class NewTeamRequest(BaseModel):
+class CreateTeamRequest(BaseModel):
     name : str
 
 class Team(BaseModel):

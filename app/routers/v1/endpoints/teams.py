@@ -1,11 +1,8 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import HTMLResponse, JSONResponse
 from app.crud import team_crud
 from app.db.database import SessionLocal, get_db
-from app.db.manager import pokemon_details_list
-from app.schemas.team_schema import NewTeamRequest, Team
+from app.schemas.team_schema import CreateTeamRequest, Team
 from sqlalchemy.exc import NoResultFound, InvalidRequestError
 
 router = APIRouter(prefix="/teams",
@@ -26,7 +23,7 @@ async def get_team_by_id(id : int, db : SessionLocal = Depends(get_db)) -> Team:
          raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Team not found")
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_team(new_team : NewTeamRequest, db : SessionLocal = Depends(get_db)) -> Team: 
+async def create_team(new_team : CreateTeamRequest, db : SessionLocal = Depends(get_db)) -> Team: 
     return team_crud.create_team(new_team=new_team, db=db)
 
 @router.post("/{id}", status_code=status.HTTP_200_OK)

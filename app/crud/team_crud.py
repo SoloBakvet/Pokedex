@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import NoResultFound,InvalidRequestError
 from app.models.pokemon_model import PokemonDBModel
 from app.models.team_model import TeamDBModel
-from app.schemas.team_schema import NewTeamRequest, Team
+from app.schemas.team_schema import CreateTeamRequest, Team
 
 def convert_team_from_db(db_team: TeamDBModel) -> Team:
     converted_team = Team.model_validate(db_team)
@@ -24,7 +24,7 @@ def query_team(team_id: int, db: Session) -> Team:
         raise NoResultFound
     return convert_team_from_db(db_team)
 
-def create_team(new_team: NewTeamRequest, db: Session) -> Team:
+def create_team(new_team: CreateTeamRequest, db: Session) -> Team:
     db.add(TeamDBModel(name=new_team.name))
     db.commit()
     db_team = db.query(TeamDBModel).filter_by(name=new_team.name).first()
