@@ -11,7 +11,7 @@ class VersionGroupDetails(BaseModel):
     class Config:
         from_attributes = True
  
-class Move(BaseModel):
+class PokemonMove(BaseModel):
     move : str
     version_group_details: List[VersionGroupDetails]
     

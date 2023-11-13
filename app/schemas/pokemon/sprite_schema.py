@@ -3,13 +3,13 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class SimplePokemonSprite(BaseModel):
+class SimplePokemonSprites(BaseModel):
     front_default : str
     
     class Config:
         from_attributes = True
         
-class PokemonSprite(BaseModel):
+class PokemonSprites(BaseModel):
     front_default : str
     front_female : Optional[str] = None
     front_shiny : str

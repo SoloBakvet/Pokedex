@@ -1,13 +1,18 @@
 import json
 from typing import List
+
+from fastapi import Depends
 from app.schemas.external.external_pokemon_schema import ExternalPokemon
 from app.schemas.pokemon.ability_schema import PokemonAbility
-from app.schemas.pokemon.move_schema import Move, VersionGroupDetails
+from app.schemas.pokemon.move_schema import PokemonMove, VersionGroupDetails
 
 from app.schemas.pokemon.pokemon_schema import Pokemon
 from app.schemas.pokemon.stat_schema import PokemonStat
 from app.schemas.pokemon.type_schema import PokemonType
 from app.schemas.external import external_ability_schema, external_type_schema, external_move_schema, external_stat_schema
+
+from app.crud import pokemon_crud
+from app.db import database
 
 def parse_json_into_external_pokemon(loaded_json: json) -> ExternalPokemon:
     return ExternalPokemon(**loaded_json)
@@ -18,7 +23,7 @@ def parse_external_into_internal_types(external_types: List[external_type_schema
         parsed_types.append(PokemonType(slot=type.slot,type=type.type.name))
     return parsed_types
 
-def parse_external_into_internal_moves(external_moves: List[external_move_schema.Move]) -> List[Move]:
+def parse_external_into_internal_moves(external_moves: List[external_move_schema.Move]) -> List[PokemonMove]:
     parsed_moves = list()
     for move in external_moves:
         parsed_version_group_details = list()
@@ -26,7 +31,7 @@ def parse_external_into_internal_moves(external_moves: List[external_move_schema
             parsed_version_group_details.append(VersionGroupDetails(move_learn_method=version_group.move_learn_method.name,
                                                                     level_learned_at=version_group.level_learned_at,
                                                                     version_group=version_group.version_group.name))
-        parsed_moves.append(Move(move=move.move.name, version_group_details=parsed_version_group_details))
+        parsed_moves.append(PokemonMove(move=move.move.name, version_group_details=parsed_version_group_details))
     return parsed_moves
 
 def parse_external_into_internal_stats(external_stats: List[external_stat_schema.PokemonStat]) -> List[PokemonStat]:
@@ -61,5 +66,5 @@ def init_db():
     with open('pokemons.json') as file:
         loaded_json = json.load(file)
         pokemon = parse_external_into_internal_pokemon(parse_json_into_external_pokemon(loaded_json[0]))
-        print(pokemon)
+        pokemon_crud.create_pokemon(pokemon=pokemon, db=next(database.get_db()))
                                                                         

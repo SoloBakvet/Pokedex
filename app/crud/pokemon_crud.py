@@ -1,41 +1,63 @@
 from typing import List
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import NoResultFound
+from app.db.database import SessionLocal
 
-from app.models.pokemon_model import PokemonDBModel, PokemonDetailsDBModel,SimpleSpriteDBModel, PokemonTypeDBModel, AdvancedSpriteDBModel
+from app.models.pokemon_model import PokemonDBModel, PokemonSpritesDBModel, PokemonTypeDBModel, PokemonAbilityDBModel, PokemonStatDBModel, PokemonMoveDBModel, VersionGroupDetailsDBModel
 from app.schemas.pokemon.pokemon_schema import SimplePokemon, Pokemon
 
-def query_pokemons(sort: str , db: Session) -> List[Pokemon]:
-    return Pokemon.model_validate(db.query(PokemonDBModel).all())
+def query_pokemons(sort: str , db: Session) -> List[SimplePokemon]:
+    simple_pokemons = list()
+    db_pokemons = db.query(PokemonDBModel).all()
+    for db_pokemon in db_pokemons:
+        simple_pokemons.append(SimplePokemon.model_validate(db_pokemon))
+    return simple_pokemons
+def query_pokemon(pokemon_id: int , db: Session) -> Pokemon:
+    db_pokemon= db.query(PokemonDBModel).filter_by(id=pokemon_id).first()
+    if(db_pokemon is None):
+        raise NoResultFound
+    return Pokemon.model_validate(db_pokemon)
 
-def query_pokemon(id: int , db: Session) -> Pokemon:
-    return db.query(PokemonDBModel).all()
-
-# def create_pokemon(pokemon: Pokemon, db: Session) -> Pokemon:
-#     db_pokemon = PokemonDBModel(id=pokemon.id, name=pokemon.name)
-#     db_simple_sprite = SimpleSpriteDBModel(front_default=pokemon.sprites.front_default, pokemon_id=pokemon.id)
-#     db_pokemon_types = list()
-#     for pokemon_type in pokemon.types:
-#         db_pokemon_types.append(PokemonTypeDBModel(slot=pokemon_type.slot, pokemon_id=pokemon.id, type=pokemon_type.type))
-#     db.add_all(db_pokemon_types)
-#     db.add(db_pokemon)
-#     db.add(db_simple_sprite)
+def create_pokemon(pokemon: Pokemon, db: Session) -> Pokemon:
+    pokemon_json = pokemon.model_dump()
+    # Remove nested pydantic models because they lead to parsing errors
+    del pokemon_json['types']
+    del pokemon_json['sprites']
+    del pokemon_json['stats']
+    del pokemon_json['abilities']
+    del pokemon_json['moves']
     
-#     db_pokemon_details = PokemonDetailsDBModel(id=pokemon_details.id, pokemon_id=pokemon.id, height=pokemon_details.height,
-#                                                weight=pokemon_details.weight,
-#                                                order=pokemon_details.order,
-#                                                species=pokemon_details.species)
-#     db_advanced_sprite = AdvancedSpriteDBModel( details_id=pokemon_details.id, front_default=pokemon_details.sprites.front_default,
-#                                                front_female=pokemon_details.sprites.front_female,
-#                                                front_shiny=pokemon_details.sprites.front_shiny,
-#                                                front_shiny_female=pokemon_details.sprites.front_shiny_female,
-#                                                back_default=pokemon_details.sprites.back_default,
-#                                                back_female=pokemon_details.sprites.back_female,
-#                                                back_shiny=pokemon_details.sprites.back_shiny,
-#                                                back_shiny_female=pokemon_details.sprites.back_shiny_female)
-#     db.add(db_pokemon_details)
-#     db.add(db_advanced_sprite)
-#     db.commit()
-#     return db.query(PokemonDBModel).filter(id=pokemon.id).first()
+    db_pokemon = PokemonDBModel(**pokemon_json)
+    db_pokemon_sprites = PokemonSpritesDBModel(**pokemon.sprites.model_dump(), pokemon_id=db_pokemon.id)
+
+    db_pokemon_types = list()
+    for type in pokemon.types:
+        db_pokemon_types.append(PokemonTypeDBModel(**type.model_dump(), pokemon_id=db_pokemon.id))
+    db_pokemon_abilities = list()
+    for ability in pokemon.abilities:
+        db_pokemon_abilities.append(PokemonAbilityDBModel(**ability.model_dump(), pokemon_id=db_pokemon.id))
+    db_pokemon_stats = list()
+    for stat in pokemon.stats:
+        db_pokemon_stats.append(PokemonStatDBModel(**stat.model_dump(), pokemon_id=db_pokemon.id))
+    db_pokemon_moves = list()
+    for move in pokemon.moves:
+        move_json = move.model_dump()
+        del move_json['version_group_details']
+        db_move = PokemonMoveDBModel(**move_json, pokemon_id=db_pokemon.id)
+        for version_group_details in move.version_group_details:
+            db_move.version_group_details.append(VersionGroupDetailsDBModel(**version_group_details.model_dump()))
+        db_pokemon_moves.append(db_move)
+        
+    db.add(db_pokemon)
+    db.add(db_pokemon_sprites)
+    db.add_all(db_pokemon_types)
+    db.add_all(db_pokemon_abilities)
+    db.add_all(db_pokemon_stats)
+    db.add_all(db_pokemon_moves)
+        
+
+    db.commit()
+    return 
 
 # def create_pokemons(pokemons: List[Pokemon], db: Session):
 #     for pokemon in pokemons:

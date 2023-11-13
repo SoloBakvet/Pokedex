@@ -8,46 +8,28 @@ class PokemonDBModel(Base):
     __tablename__ = "pokemons"
 
     id = Column(Integer, primary_key=True, index=True)
+    
     name = Column(String, index=True)
-    
-    details = relationship("PokemonDetailsDBModel", uselist=False, back_populates="pokemon")
-    types = relationship("PokemonTypeDBModel", back_populates="pokemon")
-    sprites = relationship("SimpleSpriteDBModel", uselist=False, back_populates="pokemon")
-
-    __table_args__ = (UniqueConstraint("name"),)
-    
-class PokemonDetailsDBModel(Base):
-    __tablename__ = "pokemon_details"
-
-    id = Column(Integer, primary_key=True, index=True)
-    pokemon_id = Column(Integer, ForeignKey("pokemons.id"))
-    
     height = Column(Integer, index=True)
     weight = Column(Integer, index=True)
     order = Column(Integer, index=True)
     species = Column(String, index=True)
+    form = Column(String, index=True)
     
-    sprites = relationship("AdvancedSpriteDBModel", uselist=False, back_populates="pokemon_details")
-    pokemon = relationship("PokemonDBModel", uselist=False, back_populates="details")
+    
+    types = relationship("PokemonTypeDBModel", back_populates="pokemon")
+    sprites = relationship("PokemonSpritesDBModel", uselist=False, back_populates="pokemon")
+    stats = relationship("PokemonStatDBModel", back_populates="pokemon")
+    abilities = relationship("PokemonAbilityDBModel", back_populates="pokemon")
+    moves = relationship("PokemonMoveDBModel", back_populates="pokemon")
 
-    __table_args__ = (UniqueConstraint("pokemon_id"),)
+    __table_args__ = (UniqueConstraint("name"),)
     
-class SimpleSpriteDBModel(Base):
-    __tablename__ = "simple_sprites"
+class PokemonSpritesDBModel(Base):
+    __tablename__ = "pokemon_sprites"
     
     id = Column(Integer, primary_key=True, index=True)
     pokemon_id = Column(Integer, ForeignKey("pokemons.id"))
-    
-    front_default = Column(String, index=True)
-
-    pokemon = relationship("PokemonDBModel", back_populates="sprites")
-    __table_args__ = (UniqueConstraint("pokemon_id"),)
-    
-class AdvancedSpriteDBModel(Base):
-    __tablename__ = "advanced_sprites"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    details_id = Column(Integer, ForeignKey("pokemon_details.id"))
     
     front_default = Column(String, index=True)
     front_female = Column(String, index=True, nullable=True)
@@ -58,8 +40,8 @@ class AdvancedSpriteDBModel(Base):
     back_shiny = Column(String, index=True)
     back_shiny_female = Column(String, index=True, nullable=True)
 
-    pokemon_details = relationship("PokemonDetailsDBModel", back_populates="sprites")
-    __table_args__ = (UniqueConstraint("details_id"),)
+    pokemon = relationship("PokemonDBModel", back_populates="sprites")
+    __table_args__ = (UniqueConstraint("pokemon_id"),)
     
 class PokemonTypeDBModel(Base):
     __tablename__ = "pokemon_types"
@@ -72,6 +54,54 @@ class PokemonTypeDBModel(Base):
     
     pokemon = relationship("PokemonDBModel", uselist=False, back_populates="types")
     __table_args__ = (UniqueConstraint("pokemon_id", "slot"),)
+    
+class PokemonStatDBModel(Base):
+    __tablename__ = "pokemon_stats"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    pokemon_id = Column(Integer, ForeignKey("pokemons.id"))
+    
+    stat = Column(String, index=True)
+    base_stat = Column(String, index=True)
+    effort = Column(String, index=True)
+    
+    pokemon = relationship("PokemonDBModel", uselist=False, back_populates="stats")
+    
+class PokemonAbilityDBModel(Base):
+    __tablename__ = "pokemon_abilities"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    pokemon_id = Column(Integer, ForeignKey("pokemons.id"))
+    
+    ability = Column(String, index=True)
+    is_hidden = Column(Boolean, index=True)
+    slot = Column(Integer, index=True)
+    
+    pokemon = relationship("PokemonDBModel", uselist=False, back_populates="abilities")
+    __table_args__ = (UniqueConstraint("pokemon_id", "slot"),)
+    
+class PokemonMoveDBModel(Base):
+    __tablename__ = "pokemon_moves"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    pokemon_id = Column(Integer, ForeignKey("pokemons.id"))
+    
+    move = Column(String, index=True)
 
+    pokemon = relationship("PokemonDBModel", uselist=False, back_populates="moves")
+    version_group_details = relationship("VersionGroupDetailsDBModel", back_populates="move")
+    
+class VersionGroupDetailsDBModel(Base):
+    __tablename__ = "version_group_details"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    move_id = Column(Integer, ForeignKey("pokemon_moves.id"))
+    
+    move_learn_method = Column(String, index=True)
+    version_group = Column(String, index=True)
+    level_learned_at = Column(Integer, index=True)
+    
+    move = relationship("PokemonMoveDBModel", uselist=False, back_populates="version_group_details")
+    
     
 

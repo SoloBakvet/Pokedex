@@ -17,10 +17,8 @@ async def get_all_pokemons(sort: str | None = None, db: SessionLocal = Depends(g
                            "id-asc" : True,
                            "id-desc" : True,
                            }
-    items = pokemon_crud.query_pokemons(sort=sort, db=db)
-    return items
+    return pokemon_crud.query_pokemons(sort=sort, db=db)
 
 @router.get("/{id}")
-async def get_pokemon_by_id() -> Pokemon:
-    #test = jsonable_encoder(pokemon_details_list)
-    return JSONResponse()
+async def get_pokemon_by_id(id : int, db: SessionLocal = Depends(get_db)) -> Pokemon:
+    return pokemon_crud.query_pokemon(pokemon_id=id, db=db)
