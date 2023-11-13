@@ -20,8 +20,8 @@ async def get_all_pokemons(sort: str | None = None, db: SessionLocal = Depends(g
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
             
     try:
-        return pokemon_crud.query_pokemons(sort=sort, db=db)
-    except:
+        return pokemon_crud.query_pokemons(sort=sort, limit=None, db=db)
+    except Exception:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @router.get("/{id}", status_code=status.HTTP_200_OK)

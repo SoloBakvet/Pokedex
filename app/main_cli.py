@@ -16,7 +16,7 @@ def import_pokemons_from_json(args):
                 try:
                     pokemon = parse_external_into_internal_pokemon(ExternalPokemon(**pokemon_json))
                     pokemon_crud.create_pokemon(pokemon=pokemon, db=db)
-                    print("Imported pokemon: " + pokemon.name + " (id=" + pokemon.id + ")")
+                    print("Imported pokemon: " + pokemon.name + " (id=" + str(pokemon.id) + ")")
                 except:
                     print("Failed to import a pokemon.")
 
@@ -26,10 +26,10 @@ def import_pokemons_from_json(args):
 def import_external_pokemon(args):
     try:
         db = next(database.get_db())
-        response = requests.get("https://pokeapi.co/api/v2/pokemon/" + args.id)
+        response = requests.get("https://pokeapi.co/api/v2/pokemon/" + str(args.id))
         pokemon = parse_external_into_internal_pokemon(ExternalPokemon(**response.json()))
         pokemon_crud.create_pokemon(pokemon=pokemon, db=db)
-        print("Imported pokemon: " + pokemon.name + " (id=" + pokemon.id + ")")
+        print("Imported pokemon: " + pokemon.name + " (id=" + str(pokemon.id) + ")")
     except:
         print("Failed to import a pokemon.")
     
