@@ -8,3 +8,4 @@ class PokemonStat(BaseModel):
     base_stat: int
     effort: int
     stat: Stat
+    

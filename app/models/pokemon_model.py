@@ -3,7 +3,6 @@ from sqlalchemy.orm import relationship
 
 from app.db.database import Base
 
-    
 class PokemonDBModel(Base):
     __tablename__ = "pokemons"
 
@@ -15,7 +14,6 @@ class PokemonDBModel(Base):
     order = Column(Integer, index=True)
     species = Column(String, index=True)
     form = Column(String, index=True)
-    
     
     types = relationship("PokemonTypeDBModel", back_populates="pokemon")
     sprites = relationship("PokemonSpritesDBModel", uselist=False, back_populates="pokemon")
@@ -103,5 +101,3 @@ class VersionGroupDetailsDBModel(Base):
     
     move = relationship("PokemonMoveDBModel", uselist=False, back_populates="version_group_details")
     
-    
-

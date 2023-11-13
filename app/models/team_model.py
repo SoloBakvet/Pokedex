@@ -2,6 +2,7 @@ from typing import List
 from sqlalchemy import Column, ForeignKey, Integer, String, Table, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import Mapped
+
 from app.db.database import Base
 from app.models.pokemon_model import PokemonDBModel
 
@@ -12,7 +13,6 @@ team_pokemon_association_table = Table(
     Column("pokemon_id", ForeignKey("pokemons.id")),
 )
 
-    
 class TeamDBModel(Base):
     __tablename__ = "teams"
 

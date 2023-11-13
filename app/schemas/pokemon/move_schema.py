@@ -1,7 +1,5 @@
 from typing import List
-
 from pydantic import BaseModel
-
 
 class VersionGroupDetails(BaseModel):
     move_learn_method: str

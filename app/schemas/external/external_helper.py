@@ -1,18 +1,13 @@
 import json
 from typing import List
 
-from fastapi import Depends
 from app.schemas.external.external_pokemon_schema import ExternalPokemon
 from app.schemas.pokemon.ability_schema import PokemonAbility
 from app.schemas.pokemon.move_schema import PokemonMove, VersionGroupDetails
-
 from app.schemas.pokemon.pokemon_schema import Pokemon
 from app.schemas.pokemon.stat_schema import PokemonStat
 from app.schemas.pokemon.type_schema import PokemonType
 from app.schemas.external import external_ability_schema, external_type_schema, external_move_schema, external_stat_schema
-
-from app.crud import pokemon_crud
-from app.db import database
 
 def parse_json_into_external_pokemon(loaded_json: json) -> ExternalPokemon:
     return ExternalPokemon(**loaded_json)
@@ -59,12 +54,4 @@ def parse_external_into_internal_pokemon(external_pokemon: ExternalPokemon) -> P
                    species=external_pokemon.species.name, stats=parsed_stats, abilities=parsed_abilities,
                    form=external_pokemon.forms[0].name)
     return pokemon
-
-
-# TODO: Remove
-def init_db():
-    with open('pokemons.json') as file:
-        loaded_json = json.load(file)
-        pokemon = parse_external_into_internal_pokemon(parse_json_into_external_pokemon(loaded_json[0]))
-        pokemon_crud.create_pokemon(pokemon=pokemon, db=next(database.get_db()))
-                                                                        
+                                                           

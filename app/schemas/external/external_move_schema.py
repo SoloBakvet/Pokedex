@@ -21,3 +21,4 @@ class VersionGroup(BaseModel):
 class Move(BaseModel):
     move: MoveDetails
     version_group_details: List[VersionGroup]
+    

@@ -8,3 +8,4 @@ class Ability(BaseModel):
     slot: int
     is_hidden: bool
     ability: AbilityDetails
+    

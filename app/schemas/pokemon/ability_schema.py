@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class PokemonAbility(BaseModel):
     ability: str
     is_hidden: bool
@@ -8,3 +7,4 @@ class PokemonAbility(BaseModel):
     
     class Config:
         from_attributes = True
+        
