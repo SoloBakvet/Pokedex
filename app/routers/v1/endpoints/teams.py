@@ -1,12 +1,10 @@
 from typing import Annotated, List
 from fastapi import APIRouter, Depends, HTTPException, Header, status
 from sqlalchemy.exc import NoResultFound, InvalidRequestError
-from fastapi.security import  OAuth2AuthorizationCodeBearer
 
 from app.crud import team_crud
 from app.db.database import SessionLocal, get_db
 from app.schemas.team_schema import CreateTeamRequest, Team
-
 
 router = APIRouter(prefix="/teams",
     tags=["Teams"])
